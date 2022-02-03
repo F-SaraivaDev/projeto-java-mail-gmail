@@ -12,6 +12,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 
 import com.itextpdf.text.Document;
@@ -70,6 +71,48 @@ public class ObjetoEnviaEmail {
 		Transport.send(message);
 	}
 	
+	public void enviarEmailAnexo(boolean enviaHtml) throws Exception {
+		Properties properties = new Properties();
+		properties.put("mail.smtp.ssl.trust", "*");
+		properties.put("mail.smtp.auth", "true");
+		properties.put("mail.smtp.starttls", "true");
+		properties.put("mail.smtp.host", "smtp.gmail.com");
+		properties.put("mail.smtp.port", 465);
+		properties.put("mail.smtp.socketFactory.port", "465");
+		properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+		Session session = Session.getInstance(properties, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+				// TODO Auto-generated method stub
+				return new PasswordAuthentication(userName, senha);
+			}
+		});
+
+		Address[] toUser = InternetAddress.parse(listaDestinatarios);
+
+		Message message = new MimeMessage(session);
+		message.setFrom(new InternetAddress(userName, nomeRemetente));
+		message.setRecipients(Message.RecipientType.TO, toUser);
+		message.setSubject(assuntoEmail);
+		
+		//Parte 1 do e-mail que é o texto e a descrição do e-mail
+		MimeBodyPart corpoMail = new MimeBodyPart();
+		
+		if(enviaHtml) {
+			corpoMail.setContent(textoEmail, "text/html; charset=utf8");
+			
+		}else {
+			corpoMail.setText(textoEmail);
+			
+		}
+		
+		//Parte 2 do e-mail que são os anexo em pdf
+		MimeBodyPart mimeBodyPart = new MimeBodyPart();
+		
+		Transport.send(message);
+	}
+	
 	private FileInputStream simuladorDePDF() throws Exception{
 		
 		Document document = new Document();
@@ -87,7 +130,11 @@ public class ObjetoEnviaEmail {
 			
 		
 
-
+/*
+ * 
+ * Parou na aula 10 - Enviando e-mail com PDF em anexo em 2:57
+ * 
+ */
 
 
 
