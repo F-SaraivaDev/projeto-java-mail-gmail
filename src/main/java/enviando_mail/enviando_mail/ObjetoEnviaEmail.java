@@ -28,7 +28,7 @@ public class ObjetoEnviaEmail {
 		this.textoEmail = textoEmail;
 	}
 
-	public void enviarEmail() throws Exception {
+	public void enviarEmail(boolean enviaHtml) throws Exception {
 		Properties properties = new Properties();
 		properties.put("mail.smtp.ssl.trust", "*");
 		properties.put("mail.smtp.auth", "true");
@@ -52,9 +52,34 @@ public class ObjetoEnviaEmail {
 		message.setFrom(new InternetAddress(userName, nomeRemetente));
 		message.setRecipients(Message.RecipientType.TO, toUser);
 		message.setSubject(assuntoEmail);
-		message.setText(textoEmail);
-
+		
+		if(enviaHtml) {
+			message.setContent(textoEmail, "text/html; charset=utf8");
+			
+		}else {
+			message.setText(textoEmail);
+			
+		}
 		Transport.send(message);
 	}
-
 }
+			
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
