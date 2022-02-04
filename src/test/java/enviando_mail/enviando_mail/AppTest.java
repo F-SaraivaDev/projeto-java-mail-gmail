@@ -33,7 +33,7 @@ public class AppTest{
 															"Teste Envia E-mail Java", 
 												         	stringBuilderTextoEmail.toString());
 		
-		enviaEmail.enviarEmail(true);
+		enviaEmail.enviarEmailAnexo(true);
 	}
 
 }    

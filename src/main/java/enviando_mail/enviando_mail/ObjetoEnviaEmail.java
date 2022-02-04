@@ -5,15 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
 import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Message;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
@@ -108,7 +112,16 @@ public class ObjetoEnviaEmail {
 		}
 		
 		//Parte 2 do e-mail que são os anexo em pdf
-		MimeBodyPart mimeBodyPart = new MimeBodyPart();
+		MimeBodyPart anexoEmail = new MimeBodyPart();
+		anexoEmail.setDataHandler(new DataHandler(new ByteArrayDataSource(simuladorDePDF(), "application/pdf")));
+		anexoEmail.setFileName("anexoEmail.pdf");
+		
+		Multipart multipart = new MimeMultipart();
+	    multipart.addBodyPart(corpoMail);
+	    multipart.addBodyPart(anexoEmail);
+	    
+	    message.setContent(multipart);
+	    
 		
 		Transport.send(message);
 	}
