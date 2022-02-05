@@ -3,6 +3,8 @@ package enviando_mail.enviando_mail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -64,17 +66,17 @@ public class ObjetoEnviaEmail {
 		message.setFrom(new InternetAddress(userName, nomeRemetente));
 		message.setRecipients(Message.RecipientType.TO, toUser);
 		message.setSubject(assuntoEmail);
-		
-		if(enviaHtml) {
+
+		if (enviaHtml) {
 			message.setContent(textoEmail, "text/html; charset=utf8");
-			
-		}else {
+
+		} else {
 			message.setText(textoEmail);
-			
+
 		}
 		Transport.send(message);
 	}
-	
+
 	public void enviarEmailAnexo(boolean enviaHtml) throws Exception {
 		Properties properties = new Properties();
 		properties.put("mail.smtp.ssl.trust", "*");
@@ -99,35 +101,48 @@ public class ObjetoEnviaEmail {
 		message.setFrom(new InternetAddress(userName, nomeRemetente));
 		message.setRecipients(Message.RecipientType.TO, toUser);
 		message.setSubject(assuntoEmail);
-		
-		//Parte 1 do e-mail que é o texto e a descrição do e-mail
+
+		// Parte 1 do e-mail que é o texto e a descrição do e-mail
 		MimeBodyPart corpoMail = new MimeBodyPart();
-		
-		if(enviaHtml) {
+
+		if (enviaHtml) {
 			corpoMail.setContent(textoEmail, "text/html; charset=utf8");
-			
-		}else {
+
+		} else {
 			corpoMail.setText(textoEmail);
-			
+
 		}
-		
-		//Parte 2 do e-mail que são os anexo em pdf
-		MimeBodyPart anexoEmail = new MimeBodyPart();
-		anexoEmail.setDataHandler(new DataHandler(new ByteArrayDataSource(simuladorDePDF(), "application/pdf")));
-		anexoEmail.setFileName("anexoEmail.pdf");
-		
+
+		List<FileInputStream> arquivos = new ArrayList<FileInputStream>();
+		arquivos.add(simuladorDePDF());
+		arquivos.add(simuladorDePDF());
+		arquivos.add(simuladorDePDF());
+		arquivos.add(simuladorDePDF());
+
 		Multipart multipart = new MimeMultipart();
-	    multipart.addBodyPart(corpoMail);
-	    multipart.addBodyPart(anexoEmail);
-	    
-	    message.setContent(multipart);
-	    
+		multipart.addBodyPart(corpoMail);
 		
+		int index = 1;
+
+		for (FileInputStream fileInputStream : arquivos) {
+
+			// Parte 2 do e-mail que são os anexo em pdf
+			MimeBodyPart anexoEmail = new MimeBodyPart();
+			anexoEmail.setDataHandler(new DataHandler(new ByteArrayDataSource(fileInputStream, "application/pdf")));
+			anexoEmail.setFileName("anexoEmail " + index + ".pdf");
+
+			multipart.addBodyPart(anexoEmail);
+			
+			index++;
+		}
+
+		message.setContent(multipart);
+
 		Transport.send(message);
 	}
-	
-	private FileInputStream simuladorDePDF() throws Exception{
-		
+
+	private FileInputStream simuladorDePDF() throws Exception {
+
 		Document document = new Document();
 		File file = new File("fileAnexo.pdf");
 		file.createNewFile();
@@ -135,32 +150,14 @@ public class ObjetoEnviaEmail {
 		document.open();
 		document.add(new Paragraph("Conteúdo do PDF anexo com Java Mail, esse texto é do PDF"));
 		document.close();
-		
+
 		return new FileInputStream(file);
-		
+
 	}
 }
-			
-		
 
 /*
  * 
  * Parou na aula 10 - Enviando e-mail com PDF em anexo em 2:57
  * 
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
